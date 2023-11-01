@@ -1,12 +1,38 @@
-import { AppBar, Link } from "@mui/material";
+import { AppBar, Typography } from "@mui/material";
+
+import { Link } from "react-router-dom";
+import Logout from './Logout';
+
+import './Navbar.css'
+
+const navLinks = [
+  {href: '/dashboard', text: 'Dashboard'},
+  {href: '/cities', text: 'Cities'},
+  {href: '/forecast', text: 'Forecast'},
+  {href: '/settings', text: 'Settings'},
+]
 
 export default function Navbar() {
+
+  const isUserLoggedIn = () => {
+    return !!window.localStorage.getItem('user-token');
+  }
+
   return (
-    <AppBar id='navbar' position='fixed'>
-      <Link href='/'>Dashboard</Link>
-      <Link href='/cities'>Cities</Link>
-      <Link href='/forecast'>Cities</Link>
-      <Link href='/settings'>Cities</Link>
+    <AppBar id='navbar' position='static'>
+      <Typography variant="h4" sx={{ my: 2 }}>
+        Weather Forecast
+      </Typography>
+      <>
+        {navLinks.map(navLink => <Link 
+          className='navlink'
+          key={navLink.text} 
+          to={navLink.href}>
+            {navLink.text}
+          </Link>
+        )}
+      </>
+      <Logout/>
     </AppBar>
   )
 }
