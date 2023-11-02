@@ -91,7 +91,7 @@ export default function Dashboard() {
       <Grid item sx={{margin: '5em'}}>
       <FormControl>
         <InputLabel htmlFor="cityName">City Name</InputLabel>
-        <Input onChange={(e) => setNewCityName(e.target.value)}/>
+        <Input value={newCityName} onChange={(e) => setNewCityName(e.target.value)}/>
         <Button onClick={addCity}>Add City +</Button>
       </FormControl>
 
