@@ -1,23 +1,41 @@
 import { useEffect, useState } from 'react'
-import { Typography } from "@mui/material";
+import { Typography, Grid, Button } from "@mui/material";
 
-import { getFiveDayForecast } from '../services/fiveDayForecastService';
+import { getCurrentWeatherService,  } from '../services/currentWeatherService';
+
+interface City {
+  id: number;
+  name: string;
+  lat: string;
+  lon: string;
+  country: string;
+  state: string;
+}
 
 export default function Dashboard() {
 
-  const [selectedCities, setSelectedCities] = useState<any>([]);
-  const [fiveDayForecast, setFiveDayforcast] = useState<any>([]);
+  const [selectedCities, setSelectedCities] = useState<City[]>([]);
+  const [citiesCurrentWeather, setCitiesCurrentWeather] = useState<any>([]);
+
+  
+  useEffect(function() {
+    addSampleCity();
+    const cities = loadCitiesFromLocalStorage();
+    requestWeatherData(cities);
+  }, []) 
 
   // NOTE: This implemtation breaks the React data standard and is insecure. However, it's necessary to save user data between sessions without a backend.
-  function loadCitiesFromLocalStorage() {
-    let prevSelectedCities = window.localStorage.getItem('cities')
-    prevSelectedCities = prevSelectedCities === null ? [] : JSON.parse(prevSelectedCities);
-    setSelectedCities(prevSelectedCities);
+  function loadCitiesFromLocalStorage(): City[] {
+    const prevSelectedCities: string | null = window.localStorage.getItem('cities')
+    const parsedPrevCities: City[] = prevSelectedCities === null ? [] : JSON.parse(prevSelectedCities);
+    setSelectedCities(parsedPrevCities);
+    return parsedPrevCities;
   }
 
   // Sample city data for testing purposes. Must be disabled to use first-login workflow.
   function addSampleCity() {
-    const cities = [{
+    const cities: City[] = [{
+      'id': 2643743,
       'name': 'London',
       'lat':'51.5073219',
       'lon':'-0.1276474',
@@ -30,30 +48,45 @@ export default function Dashboard() {
   }
 
   // Make successive requests for forecast data of each selected city. Batch city data unavailable at free tier.
-  async function requestWeatherData() {
+  async function requestWeatherData(cities: City[]) {
     const weatherData = [];
 
-    for (const city of selectedCities) {
-      const result = await getFiveDayForecast(city);
+    for (const city of cities) {
+      const result = await getCurrentWeatherService(city);
       weatherData.push(result);
     }
 
-    setFiveDayforcast(weatherData);
+    setCitiesCurrentWeather(weatherData);
   }
 
-  useEffect(function() {
-    addSampleCity()
-    loadCitiesFromLocalStorage()
-    requestWeatherData()
-  }, []) 
+  function removeCity(id: number) {
+
+    setSelectedCities((cities: City[]) => {
+      return cities.filter((city: City) => !(city.id === id));
+    });
+
+    setCitiesCurrentWeather((cities: any) => {
+      return cities.filter((city: any) => !(city.id === id));
+    })
+    
+  }
 
   return (
-    <div id='dashboard'>
+    <Grid id='dashboard' container spacing={2}>
       {
-        selectedCities.map((city: any) => (
-          <Typography key={city.name}>{city.name}</Typography>
-        ))
+        citiesCurrentWeather.map(({id, name, country, currentTemp, currentWeatherConditions, maxTemp, minTemp}: any) => {
+          return (
+            <Grid key={id} item xs={6} md={8}>
+              <Typography>City: {name}, {country}</Typography>
+              <Typography>Current Temperature: {currentTemp} °F</Typography>
+              <Typography>Daily High: {maxTemp} °F</Typography>
+              <Typography>Daily Low: {minTemp} °F</Typography>
+              <Typography>Weather Conditions: {currentWeatherConditions.join(', ')}</Typography>
+              <Button onClick={() => removeCity(id)}>Remove City -</Button>
+          </Grid>
+          );
+        })
       }
-    </div>
+    </Grid>
   )
 }
