@@ -8,7 +8,7 @@ import './index.css';
 import App from './App';
 
 import Dashboard from './components/Dashboard';
-import CityDetails from './components/CityDetails';
+import Forecasts from './components/Forecasts'
 import Settings from './components/Settings';
 
 import ErrorPage from './routes/ErrorPage';
@@ -25,8 +25,8 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />
       },
       {
-        path: "/city/:name",
-        element: <CityDetails />,
+        path: "/forecasts",
+        element: <Forecasts />,
         errorElement: <ErrorPage />
       },      
       {

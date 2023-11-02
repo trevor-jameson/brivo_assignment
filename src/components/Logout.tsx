@@ -7,6 +7,6 @@ export default function Logout() {
   }
 
   return (
-    <Button onClick={logout}>Logout</Button>
+    <Button variant="outlined" color="secondary" onClick={logout}>Logout</Button>
   )
 }

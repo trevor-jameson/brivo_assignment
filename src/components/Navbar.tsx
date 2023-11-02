@@ -7,8 +7,7 @@ import './Navbar.css'
 
 const navLinks = [
   {href: '/dashboard', text: 'Dashboard'},
-  {href: '/cities', text: 'Cities'},
-  {href: '/forecast', text: 'Forecast'},
+  {href: '/forecasts', text: '5 Day Forecasts'},
   {href: '/settings', text: 'Settings'},
 ]
 
