@@ -9,9 +9,9 @@ if (OW_API_KEY === undefined && process.env.NODE_ENV === 'development') {
 
 // NOTE: Country codes adhere tos ISO 3166 standard.
 interface LocationQueryFields {
-  cityName: string;
+  name: string;
   stateCode?: string;
-  countryCode: string;
+  countryCode?: string;
   limit?: number;
 }
 
@@ -28,7 +28,10 @@ export async function getCityConvertedToGeocode(query: LocationQueryFields) {
     const params = generateQueryParams(query);
     const url = `${BASE_GEOCODE_API_V1_URL}${params}&appid=${OW_API_KEY}`
     const response = await axios.get(url);
-    return response;
+    
+    // NOTE: Only returning the first of 0+ matching cities. Can use limit param if intended behavior.
+    // May build out result selection dropdown feature for user
+    return response.data[0];
   } catch (error) {
     console.error(error)
   }
@@ -37,9 +40,9 @@ export async function getCityConvertedToGeocode(query: LocationQueryFields) {
 export async function getZipcodeConvertedToGeocode() {
 }
 
-export function generateQueryParams({ cityName, stateCode, countryCode, limit = 5}: LocationQueryFields) {
+export function generateQueryParams({ name, stateCode, countryCode, limit = 5}: LocationQueryFields) {
   // NOTE: stateCode is only required with USA countryCode
   if (stateCode !== undefined) stateCode = `${stateCode},`
-  return `?q=${cityName},${stateCode}${countryCode}&limit=${limit}`
+  return `?q=${name},${stateCode}${countryCode}&limit=${limit}`
 }
 

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Typography, Grid, Button } from "@mui/material";
+import { Typography, Grid, Button, FormControl, Input, InputLabel } from "@mui/material";
 
 import { getCurrentWeatherService,  } from '../services/currentWeatherService';
+import { getCityConvertedToGeocode } from '../services/geocodingService';
 
 interface City {
   id: number;
@@ -16,6 +17,7 @@ export default function Dashboard() {
 
   const [selectedCities, setSelectedCities] = useState<City[]>([]);
   const [citiesCurrentWeather, setCitiesCurrentWeather] = useState<any>([]);
+  const [newCityName, setNewCityName] = useState('');
 
   
   useEffect(function() {
@@ -58,6 +60,19 @@ export default function Dashboard() {
 
     setCitiesCurrentWeather(weatherData);
   }
+  
+  async function addCity() {
+    const name = newCityName.toLowerCase();
+    const isInSelectedCities = selectedCities.find((city: City) => city.name.toLowerCase() === name);
+    if (!isInSelectedCities && name.length > 0) {
+      const geoLocatedCity = await getCityConvertedToGeocode({name});
+      const weatherData = await getCurrentWeatherService(geoLocatedCity);
+      setCitiesCurrentWeather((cities: City[]) => {
+        return [...cities, weatherData];
+      })
+    }
+    setNewCityName('');
+  }
 
   function removeCity(id: number) {
 
@@ -68,11 +83,21 @@ export default function Dashboard() {
     setCitiesCurrentWeather((cities: any) => {
       return cities.filter((city: any) => !(city.id === id));
     })
-    
+
   }
 
   return (
-    <Grid id='dashboard' container spacing={2}>
+    <Grid id='dashboard' container spacing={2} sx={{padding: '3em'}}>
+      <Grid item sx={{margin: '5em'}}>
+      <FormControl>
+        <InputLabel htmlFor="cityName">City Name</InputLabel>
+        <Input onChange={(e) => setNewCityName(e.target.value)}/>
+        <Button onClick={addCity}>Add City +</Button>
+      </FormControl>
+
+        
+      </Grid>
+  
       {
         citiesCurrentWeather.map(({id, name, country, currentTemp, currentWeatherConditions, maxTemp, minTemp}: any) => {
           return (
