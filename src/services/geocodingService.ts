@@ -23,7 +23,7 @@ interface GeoCodeResponse {
   state?: string;
 }
 
-export async function getCityConvertedToGeocode(query: LocationQueryFields) {
+export async function getCityConvertedToGeocodeService(query: LocationQueryFields) {
   try {
     const params = generateQueryParams(query);
     const url = `${BASE_GEOCODE_API_V1_URL}${params}&appid=${OW_API_KEY}`

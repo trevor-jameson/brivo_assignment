@@ -44,7 +44,11 @@ export interface ForecastData {
   lon: string;
   currentTemp: number;
   currentWeatherConditions: string;
-  forecasts: any;
+  forecasts: {
+    minTemp: number;
+    maxTemp: number;
+    weatherCondition: string[];
+  };
 }
 
 export function fiveDayForecastTransformer(data: any): ForecastData {
@@ -63,7 +67,7 @@ export function fiveDayForecastTransformer(data: any): ForecastData {
   }
 }
 
-function calculateDailyTemps({ list }: any) {
+export function calculateDailyTemps({ list }: any) {
   const dailyRecords: any = {}
 
   dailyRecords.currentTemp = list[0].main.temp;
@@ -92,5 +96,6 @@ function calculateDailyTemps({ list }: any) {
     }
   }
 
+  console.log(dailyRecords)
   return dailyRecords;
 }

@@ -3,12 +3,12 @@ import ReactDOM from 'react-dom/client';
 import { 
   createBrowserRouter,
   RouterProvider
-} from 'react-router-dom'
+} from 'react-router-dom';
 import './index.css';
 import App from './App';
 
 import Dashboard from './components/Dashboard';
-import Forecasts from './components/Forecasts'
+import Forecasts from './components/Forecasts';
 import Settings from './components/Settings';
 
 import ErrorPage from './routes/ErrorPage';

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Typography, Grid, Button, FormControl, Input, InputLabel } from "@mui/material";
 
 import { getCurrentWeatherService,  } from '../services/currentWeatherService';
-import { getCityConvertedToGeocode } from '../services/geocodingService';
+import { getCityConvertedToGeocodeService } from '../services/geocodingService';
 
 interface City {
   id: number;
@@ -24,7 +24,12 @@ export default function Dashboard() {
     addSampleCity();
     const cities = loadCitiesFromLocalStorage();
     requestWeatherData(cities);
+    return saveSelectedCitiesToLocalStorage;
   }, []) 
+
+  function saveSelectedCitiesToLocalStorage() {
+    window.localStorage.setItem('cities', JSON.stringify(selectedCities));
+  }
 
   // NOTE: This implemtation breaks the React data standard and is insecure. However, it's necessary to save user data between sessions without a backend.
   function loadCitiesFromLocalStorage(): City[] {
@@ -65,7 +70,7 @@ export default function Dashboard() {
     const name = newCityName.toLowerCase();
     const isInSelectedCities = selectedCities.find((city: City) => city.name.toLowerCase() === name);
     if (!isInSelectedCities && name.length > 0) {
-      const geoLocatedCity = await getCityConvertedToGeocode({name});
+      const geoLocatedCity = await getCityConvertedToGeocodeService({name});
       const weatherData = await getCurrentWeatherService(geoLocatedCity);
       setCitiesCurrentWeather((cities: City[]) => {
         return [...cities, weatherData];
